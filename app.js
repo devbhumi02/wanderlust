@@ -2,7 +2,7 @@ if(process.env.NODE_ENV != "production"){
   require("dotenv").config();
 }
 
-console.log(process.env.SECRET);
+console.log(process.env.SECRET || "mysupersecretfallback");
 
 const express = require("express");
 const app = express();
@@ -44,7 +44,7 @@ app.use(express.static(path.join(__dirname,"/public")));
 const store = MongoStore.create({
     mongoUrl: dbUrl,
     crypto: {
-        secret: process.env.SECRET || "mysupersecretfallback",
+        secret: String(process.env.SECRET || "mysupersecretfallback"),
     },
     touchAfter: 24 * 3600,
 });
@@ -102,6 +102,8 @@ app.use((err,req,res,next) => {
   res.status(statusCode).render("error.ejs",{message});
   // res.status(statusCode).send(message);
 });
+
+
 
 const port = process.env.PORT || 8080
 app.listen(port, () => {
