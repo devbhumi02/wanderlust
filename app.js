@@ -22,70 +22,120 @@ const listingRouter = require("./routes/listing.js");
 const reviewRouter = require("./routes/review.js");
 const userRouter = require("./routes/user.js");
 
+
+// 1. Database Connection String Check
 const dbUrl = process.env.ATLASDB_URL;
-async function main() {
-    await mongoose.connect(dbUrl);
-}
 
-main().then(() => {
-    console.log("connected to DB");
-}).catch ((err) => { 
-    console.log(err)
-});
-
-app.set("view engine","ejs")
-app.set("views",path.join(__dirname,"views"));
-app.use(express.urlencoded({extended:true}));
-app.use(express.json());
-app.use(methodOverride("_method"));
-app.engine('ejs',ejsMate);
-app.use(express.static(path.join(__dirname,"/public")));
-
+// 2. Updated MongoStore Configuration
 const store = MongoStore.create({
     mongoUrl: dbUrl,
     crypto: {
-        secret: process.env.SECRET,
+        // This ensures the 'length' property is never read on a null object
+        secret: process.env.SECRET || "thisshouldbeabettersecret",
     },
-    touchAfter: 24 * 3600,
+    touchAfter: 24 * 3600, // time period in seconds
 });
 
-store.on("error",(err) => {
-  console.log("ERROR in MONGO SESSION STORE",err);
-})
+store.on("error", (err) => {
+    console.log("ERROR in MONGO SESSION STORE", err);
+});
 
+// 3. Session Options
 const sessionOptions = {
-  store,
-  secret: process.env.SECRET,
-  resave: false,
-  saveUninitialized: false,
-  cookie: {
-    expires: Date.now() + 7*24*60*60*1000,
-    maxAge: 7*24*60*60*1000, 
-    httpOnly :true,
-  },
+    store: store, // explicitly assign the store
+    secret: process.env.SECRET || "thisshouldbeabettersecret",
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+        expires: Date.now() + 7 * 24 * 60 * 60 * 1000,
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+        httpOnly: true,
+    },
 };
 
-app.use((req,res,next) => {
-  res.locals.currUser = req.user;
-  next();
-});
-
+// --- CRITICAL MIDDLEWARE ORDER ---
 app.use(session(sessionOptions));
 app.use(flash());
 
 app.use(passport.initialize());
 app.use(passport.session());
 passport.use(new LocalStrategy(User.authenticate()));
-
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
-app.use((req,res,next) => {
-  res.locals.success = req.flash("success");
-  res.locals.error = req.flash("error");
-  res.locals.currUser = req.user;
-  next();
+// This middleware MUST come after passport.session()
+app.use((req, res, next) => {
+    res.locals.success = req.flash("success");
+    res.locals.error = req.flash("error");
+    res.locals.currUser = req.user; 
+    next();
 });
+
+
+// const dbUrl = process.env.ATLASDB_URL;
+// async function main() {
+//     await mongoose.connect(dbUrl);
+// }
+
+// main().then(() => {
+//     console.log("connected to DB");
+// }).catch ((err) => { 
+//     console.log(err)
+// });
+
+// app.set("view engine","ejs")
+// app.set("views",path.join(__dirname,"views"));
+// app.use(express.urlencoded({extended:true}));
+// app.use(express.json());
+// app.use(methodOverride("_method"));
+// app.engine('ejs',ejsMate);
+// app.use(express.static(path.join(__dirname,"/public")));
+
+// const store = MongoStore.create({
+//     mongoUrl: dbUrl,
+//     crypto: {
+//         secret: process.env.SECRET || "thisshouldbeabettersecret",
+//     },
+//     touchAfter: 24 * 3600,
+// });
+
+// store.on("error",(err) => {
+//   console.log("ERROR in MONGO SESSION STORE",err);
+// })
+
+// const sessionOptions = {
+//   store,
+//   secret: process.env.SECRET,
+//   resave: false,
+//   saveUninitialized: false,
+//   cookie: {
+//     expires: Date.now() + 7*24*60*60*1000,
+//     maxAge: 7*24*60*60*1000, 
+//     httpOnly :true,
+//   },
+// };
+
+// app.use((req,res,next) => {
+//   res.locals.currUser = req.user;
+//   next();
+// });
+
+// app.use(session(sessionOptions));
+// app.use(flash());
+
+// app.use(passport.initialize());
+// app.use(passport.session());
+// passport.use(new LocalStrategy(User.authenticate()));
+
+// passport.serializeUser(User.serializeUser());
+// passport.deserializeUser(User.deserializeUser());
+
+// app.use((req,res,next) => {
+//   res.locals.success = req.flash("success");
+//   res.locals.error = req.flash("error");
+//   res.locals.currUser = req.user;
+//   next();
+// });
 
 
 app.use("/listings",listingRouter);
