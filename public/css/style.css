@@ -1,0 +1,117 @@
+html,body{
+  height:100%;
+  margin:0;
+}
+body{
+  font-family:"plus Jakarta Sans",sans-serif !important;
+  display:flex;
+  flex-direction:column;
+  min-height:100vh;
+}
+.page-content{
+  flex:1;
+}
+.container{
+  flex:1;
+}
+
+/* Navbar */
+.navbar{
+  height: 5rem;
+  background-color:white;
+}
+.fa-compass{
+  color:#fe424d;
+  font-size:2rem;
+}
+.nav-link{
+  color:#222222 !important;
+}
+.f-info-links a{
+  text-decoration:none;
+  color:#222222;
+}
+.f-info-links a:hover{
+  text-decoration:underline;
+}
+.f-info-links,.f-info-socials,.f-info-brand{
+  width:100%;
+  display:flex;
+  justify-content:center;
+  color:#222222;
+  align-items:center;
+  padding:0.6rem;
+}
+.f-info-socials i{
+  font-size:1.2rem;
+  margin-right:1rem;
+}
+.f-info{ 
+  text-align:center;
+  height:8rem;
+  background-color:#ebebeb;
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:center;
+  align-items:space-evenly;
+  margin-top: auto;
+}
+.listing-card{
+  border:none !important;
+  margin-bottom:2rem;
+}
+.card-img-top{
+  border-radius:1rem !important;
+  width:100%;
+  object-fit:cover !important; /* ye property us ei hai taki image bina sterch hue ya apne dimensions change kiye jitni jgh hai usme fit ho jaye */
+}
+.card body{
+  padding:0 !important;
+}
+.card-text p{
+  font-weight:500 !important;
+}
+.listing-link{
+ text-decoration:none;
+}
+.card-img-overlay{
+  opacity:0;
+}
+.card-img-overlay:hover{
+  opacity:0.2;
+  background-color:white;
+}
+/* New Page */
+.add-btn{
+  background-color: #fe424d !important;
+  border:none !important;
+}
+/* Edit Page */
+.edit-btn{
+  background-color: #fe424d !important;
+  border:none !important;
+}
+/* Show page */
+.show-img{
+  height:30vh;
+}
+/* for show page buttons */
+.btns{
+  display:flex; 
+  position:relative;
+  top:-20px;
+}
+
+.preview-img{
+  width: 250px;
+  height:200px;
+  object-fit:cover;
+  border-radius:10px;
+}
+
+/* Map */
+#map {
+   height: 400px;
+   width: 80vh;
+  }
+
