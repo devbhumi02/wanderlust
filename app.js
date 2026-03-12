@@ -30,7 +30,10 @@ main().then(() => {
 });
 
 async function main() {
-  await mongoose.connect(dbUrl);
+  await mongoose.connect(dbUrl, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+  });
 }
 
 app.set("view engine","ejs")
@@ -44,7 +47,7 @@ app.use(express.static(path.join(__dirname,"/public")));
 const store = MongoStore.create({
   mongoUrl:dbUrl,
   crypto:{
-    SECRET:process.env.SECRET,
+    secret:process.env.SECRET,
   },
   touchAfter:24*3600,
 });
@@ -104,7 +107,7 @@ app.use((err,req,res,next) => {
 });
 
 const port = process.env.PORT || 8080
-app.listen(8080,() => {
-    console.log("app is listening to port ${port}");
+app.listen(port, () => {
+  console.log(`app is listening on port ${port}`);
 });
 
