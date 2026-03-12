@@ -55,7 +55,7 @@ store.on("error",(err) => {
 
 const sessionOptions = {
   store,
-  secret: process.env.SECRET,
+  secret: String(process.env.SECRET || "mysupersecretfallback"),
   resave: false,
   saveUninitialized: false,
   cookie: {
@@ -109,7 +109,7 @@ const port = process.env.PORT || 8080
 app.listen(port, () => {
   console.log(`app is listening on port ${port}`);
 });
-  
+   
 
 
 
